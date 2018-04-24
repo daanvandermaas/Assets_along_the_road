@@ -7,7 +7,6 @@ data = lapply(classes, function(x){
   data = data[data$label == x,]
   samp = sample(c(1:nrow(data)), n)
   return(data[samp,])
-
   })
   data = rbindlist(data)
   order = sample(c(1:nrow(data)), nrow(data))
@@ -22,9 +21,6 @@ data = lapply(classes, function(x){
 for(i in 1:length(files)){
 im = readImage( as.character(files[i]))
 
-im = im[,500:800,]
-
-im = resize( im, w, h)
 
 a[i,,,] = im
 

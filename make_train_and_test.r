@@ -1,4 +1,4 @@
-files = list.files('db/images', full.names = TRUE, recursive = TRUE, pattern = '.jpg')
+files = list.files('db/images_pieces', full.names = TRUE, recursive = TRUE, pattern = '.jpg')
 
 class = unlist(lapply(files, function(x){
   strsplit(x,'[/.]')[[1]][3]
@@ -17,5 +17,5 @@ samp = sample(c(1:nrow(data)), round(0.8*nrow(data)))
 train = data[samp,]
 test = data[-samp,]
 
-saveRDS(train, 'db/train.rds')
-saveRDS(test, 'db/test.rds')
+saveRDS(train, 'db/train_new.rds')
+saveRDS(test, 'db/test_new.rds')
