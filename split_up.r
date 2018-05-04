@@ -1,7 +1,7 @@
 library(EBImage)
 
-path = 'db/images_new/niks'
-path_out ='db/images_pieces/niks'
+path = 'db/images_new/middenberm'
+path_out ='db/images_pieces/middenberm'
 w = 512
 h = 64
 

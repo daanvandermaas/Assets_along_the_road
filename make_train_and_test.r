@@ -13,7 +13,7 @@ data = data.frame('file' = files, 'class' = class)
 
 data$label = as.numeric(as.factor(data$class))
 
-samp = sample(c(1:nrow(data)), round(0.8*nrow(data)))
+samp = sample(c(1:nrow(data)), round(0.9*nrow(data)))
 train = data[samp,]
 test = data[-samp,]
 
