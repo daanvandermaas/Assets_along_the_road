@@ -2,18 +2,23 @@ library(jsonlite)
 library(EBImage)
 library(keras)
 library(pbapply)
+library(data.table)
 
 #find all panoramas
-max = 21246
-pages =  sample(c(1:max), 100)
+max = 10000
+pages =  sample(c(1:max), 1000)
 
 
-res = unlist(pblapply(pages, function(i){
+res = pblapply(pages, function(i){
   
   url = paste0('https://api.data.amsterdam.nl/panorama/recente_opnames/2017/?page=', i)  
   res = fromJSON(url)
-  res$results$image_sets$equirectangular$small
-}))
+  
+  data.frame('pano_id' = res$results$pano_id, 'geometrie' = res$results$geometrie, 'url' =  res$results$image_sets$equirectangular$small )
+
+})
+
+res = rbindlist(res)
 
 saveRDS(res, 'db/panoramas.rds')
 
@@ -22,25 +27,25 @@ saveRDS(res, 'db/panoramas.rds')
 
 #Download image in forloop
 res = readRDS('db/panoramas.rds')
-model = load_model_hdf5('db/model_all')
+model = keras::load_model_hdf5('db/model_1')
+table_locations = list()
 w = 512
  h = 64
  
  w2 = 128
  h2 = 64
 
- #1683
-for( i in 2143:length(res) ){
+ 
+for(i in 1:nrow(res)){
 
   
-  possible <-  class(try(readImage(res[i]))) == 'try-error'
+  im_full = try( readImage(  as.character(res$url[i]) ))
   
+ 
   
-    if(possible ){ print('caught an error')}else{
+    if(class(im_full) == 'try-error' ){ print('caught an error')}else{
   
       print(i)
-  
-  im_full = readImage(res[i])
   
   
   
@@ -60,16 +65,16 @@ for( i in 2143:length(res) ){
   
   klassen = model$predict(a)
   for(j in 1:nrow(klassen)){
-  if(klassen[j,1] >0.9){
-    writeImage(im_parts[[j]], file.path('db', 'images_from_api', 'middenberm', paste0('7_', i, '_', j, '.jpg')) )
-  }else{
-    writeImage(im_parts[[j]], file.path('db', 'images_from_api', 'niks', paste0('7_', i, '_', j, '.jpg')) )
+  if(klassen[j,1] >0.98){
+    writeImage(im_parts[[j]], file.path('db', 'images_from_api', 'middenberm', paste0('8_', res$pano_id[i] , '.jpg')) )
+ table_locations = c( table_locations, data.frame('pano_id' = res$pano_id[i], 'geometry' = paste(res$geometrie.coordinates[i][[1]][1], res$geometrie.coordinates[i][[1]][2]  ),  'direction' = j)) 
+    }else{
+    writeImage(im_parts[[j]], file.path('db', 'images_from_api', 'niks', paste0('8_', res$pano_id[i] ,'.jpg')) )
   }
   }
     }
   
   }
 
-
-
-
+ table_locations = rbindlist(table_locations)
+ saveRDS(table_locations, 'db/table_locations.rds')

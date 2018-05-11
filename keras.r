@@ -58,7 +58,7 @@ if(ev[[2]]> max_acc){
   
 }
 
-files = read_files(data = train, w, h, n = 213)
+files = read_files(data = train, w, h, n = 40)
 ev =   model$evaluate(x = files[[1]], y = files[[2]] )
 train_acc = c(train_acc , ev[[2]])
 train_loss = c(train_loss, ev[[1]])
