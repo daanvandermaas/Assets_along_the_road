@@ -6,8 +6,8 @@ source('read_files.r')
 
 train = readRDS('db/train_new.rds')
 test = readRDS('db/test_new.rds')
-train$file = as.character( file.path('db', 'images_pieces', train$class, train$file))
-test$file = as.character( file.path('db', 'images_pieces', test$class, test$file))
+train$file = as.character( file.path('db', 'images_pieces_niet_inrijden', train$class, train$file))
+test$file = as.character( file.path('db', 'images_pieces_niet_inrijden', test$class, test$file))
 
 max_acc = 0.96
 
@@ -35,7 +35,7 @@ test_loss = c()
 step = c()
 
 
-for (i in 1:2000000) {
+for (i in 1:2000000){
   
   
   files = read_files(data = train, w, h, n = 128)
@@ -46,7 +46,7 @@ for (i in 1:2000000) {
     
     step = c(step, i)
     
-    files = read_files(data = test, w, h, n = 64)
+    files = read_files(data = test, w, h, n = 4)
     ev =   model$evaluate(x = files[[1]], y = files[[2]] )
     test_acc = c(test_acc, ev[[2]])
     test_loss = c(test_loss, ev[[1]])
@@ -54,7 +54,7 @@ print(paste('test evaluation:',     ev[[2]] ))
 
 if(ev[[2]]> max_acc){
   max_acc = ev[[2]]
-  model$save('db/model' )
+  model$save('db/model_new' )
   
 }
 
@@ -69,4 +69,4 @@ print(paste('train evaluation:',     ev[[2]] ))
 }
 
 
-#model$save('db/model')
+#model$save('db/model_nietinrijden')

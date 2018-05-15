@@ -6,7 +6,7 @@ library(data.table)
 
 #find all panoramas
 max = 10000
-pages =  sample(c(1:max), 1000)
+pages =  sample(c(1:21246), max)
 
 
 res = pblapply(pages, function(i){
@@ -27,7 +27,7 @@ saveRDS(res, 'db/panoramas.rds')
 
 #Download image in forloop
 res = readRDS('db/panoramas.rds')
-model = keras::load_model_hdf5('db/model_1')
+model = keras::load_model_hdf5('db/model_nietinrijden_1')
 table_locations = list()
 w = 512
  h = 64
@@ -36,7 +36,7 @@ w = 512
  h2 = 64
 
  
-for(i in 1:nrow(res)){
+for(i in 684:nrow(res)){
 
   
   im_full = try( readImage(  as.character(res$url[i]) ))
@@ -65,11 +65,11 @@ for(i in 1:nrow(res)){
   
   klassen = model$predict(a)
   for(j in 1:nrow(klassen)){
-  if(klassen[j,1] >0.98){
-    writeImage(im_parts[[j]], file.path('db', 'images_from_api', 'middenberm', paste0('8_', res$pano_id[i] , '.jpg')) )
- table_locations = c( table_locations, data.frame('pano_id' = res$pano_id[i], 'geometry' = paste(res$geometrie.coordinates[i][[1]][1], res$geometrie.coordinates[i][[1]][2]  ),  'direction' = j)) 
+  if(klassen[j,1] >0.6){
+    writeImage(im_parts[[j]], file.path('db', 'images_from_api', 'middenberm', paste0(j, '_', res$pano_id[i] , '.jpg')) )
+ table_locations = append( table_locations,  list(data.frame('pano_id' = res$pano_id[i], 'geometry' = paste(res$geometrie.coordinates[i][[1]][1], res$geometrie.coordinates[i][[1]][2]  ),  'direction' = j)) ) 
     }else{
-    writeImage(im_parts[[j]], file.path('db', 'images_from_api', 'niks', paste0('8_', res$pano_id[i] ,'.jpg')) )
+    writeImage(im_parts[[j]], file.path('db', 'images_from_api', 'niks', paste0(j, '_', res$pano_id[i] ,'.jpg')) )
   }
   }
     }

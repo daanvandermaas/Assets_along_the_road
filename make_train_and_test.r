@@ -1,4 +1,4 @@
-files = list.files('db/images_pieces', full.names = TRUE, recursive = TRUE, pattern = '.jpg')
+files = list.files('db/images_pieces_niet_inrijden', full.names = TRUE, recursive = TRUE, pattern = '.jpg')
 
 class = unlist(lapply(files, function(x){
   strsplit(x,'[/.]')[[1]][3]
